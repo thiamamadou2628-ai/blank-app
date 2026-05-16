@@ -4,7 +4,7 @@ import urllib.parse
 # ─── CONFIGURATION DE LA PAGE ────────────────────────────────────────────────
 st.set_page_config(page_title="Forge IA", page_icon="🤖", layout="wide")
 
-# ─── INJECTION DES STYLES CSS COMPLETS (VERSION ULTRA-ANIMÉE) ────────────────
+# ─── INJECTION DES STYLES CSS COMPLETS (VERSION FONDS IMAGES & ANIMATIONS) ───
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght=400;700;900&family=Syne:wght=400;700;800&display=swap');
@@ -76,35 +76,55 @@ st.markdown("""
         border: 1px solid rgba(56, 189, 248, 0.5) !important;
     }
 
-    /* CARTES DES AGENTS AVEC ANIMATION */
+    /* CARTES DES AGENTS AVEC IMAGES DE FOND ET HOVER */
     .agent-card {
-        background: #0a1020 !important;
+        position: relative !important;
+        background-size: cover !important;
+        background-position: center !important;
         border: 1px solid #1e2d4a !important;
         border-radius: 18px !important;
         padding: 24px !important;
         margin-bottom: 20px !important;
         display: flex !important; flex-direction: column !important;
         justify-content: space-between !important; min-height: 420px;
+        overflow: hidden !important;
+        z-index: 1;
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
     }
+    
+    /* FILTRE ASSOMBREUR POUR LA LISIBILITÉ DU TEXTE */
+    .agent-card::before {
+        content: "";
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: linear-gradient(180deg, rgba(10, 16, 32, 0.88) 0%, rgba(6, 9, 18, 0.96) 100%) !important;
+        z-index: -1;
+        transition: all 0.3s ease;
+    }
+    
     .agent-card:hover { 
         transform: translateY(-8px) scale(1.01); 
         border-color: #38bdf8 !important;
-        box-shadow: 0 10px 30px rgba(56, 189, 248, 0.15) !important;
+        box-shadow: 0 10px 30px rgba(56, 189, 248, 0.2) !important;
     }
+    
+    .agent-card:hover::before {
+        background: linear-gradient(180deg, rgba(10, 16, 32, 0.78) 0%, rgba(6, 9, 18, 0.92) 100%) !important;
+    }
+
     .agent-card.premium {
-        background: linear-gradient(145deg, #0d1526, #111827) !important;
         border: 1px solid rgba(129, 140, 248, 0.3) !important;
     }
     .agent-card.premium:hover {
         border-color: #818cf8 !important;
-        box-shadow: 0 10px 30px rgba(129, 140, 248, 0.2) !important;
+        box-shadow: 0 10px 30px rgba(129, 140, 248, 0.25) !important;
     }
-    .agent-title { font-family: 'Orbitron', sans-serif; font-size: 19px; font-weight: 700; color: #fff; }
+    
+    .agent-title { font-family: 'Orbitron', sans-serif; font-size: 19px; font-weight: 700; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
     .agent-dom { font-size: 10px; font-weight: 800; color: #38bdf8; text-transform: uppercase; letter-spacing: 1.5px; }
-    .agent-desc { color: #94a3b8; font-size: 13px; line-height: 1.6; margin: 10px 0; }
+    .agent-desc { color: #cbd5e1; font-size: 13px; line-height: 1.6; margin: 10px 0; text-shadow: 0 1px 2px rgba(0,0,0,0.6); }
 
-    /* BOUTONS WA & FREE AVEC SURVOL ANIMÉ */
+    /* BOUTONS */
     .btn-wa {
         display: block; text-align: center; font-family: 'Orbitron', sans-serif;
         background: linear-gradient(135deg, #38bdf8, #818cf8);
@@ -115,34 +135,30 @@ st.markdown("""
     .btn-wa:hover {
         transform: scale(1.03);
         box-shadow: 0 0 15px rgba(129, 140, 248, 0.4);
-        opacity: 0.95;
     }
     .btn-free {
         display: block; text-align: center; font-family: 'Orbitron', sans-serif;
-        background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3);
+        background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.4);
         color: #10b981 !important; font-weight: 900; font-size: 12px;
         padding: 12px 0; border-radius: 10px; text-decoration: none; margin-top: 15px;
         transition: all 0.3s ease;
     }
     .btn-free:hover {
-        background: rgba(16, 185, 129, 0.2) !important;
+        background: rgba(16, 185, 129, 0.25) !important;
         transform: scale(1.02);
     }
     
     .skill-tag {
-        display: inline-block; background: rgba(255, 255, 255, 0.04);
+        display: inline-block; background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255,255,255,0.1);
         border-radius: 6px; padding: 2px 8px; font-size: 11px;
-        color: #cbd5e1; margin: 2px;
+        color: #fff; margin: 2px;
     }
 
-    /* CARTES PORTFOLIO ENTIÈREMENT RESTYLISÉES ET ANIMÉES */
+    /* PORTFOLIO ANIMÉ */
     .portfolio-card { 
-        background: #0a1020; 
-        border: 1px solid #1e2d4a; 
-        border-radius: 20px; 
-        overflow: hidden; 
-        height: 100%; 
-        margin-bottom: 25px;
+        background: #0a1020; border: 1px solid #1e2d4a; border-radius: 20px; 
+        overflow: hidden; height: 100%; margin-bottom: 25px;
         transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     }
     .portfolio-card:hover {
@@ -150,40 +166,19 @@ st.markdown("""
         border-color: #f472b6 !important;
         box-shadow: 0 15px 35px rgba(244, 114, 182, 0.2) !important;
     }
-    .portfolio-img { 
-        width: 100%; 
-        height: 220px; 
-        object-fit: cover; 
-        transition: transform 0.5s ease;
-    }
-    .portfolio-card:hover .portfolio-img {
-        transform: scale(1.06);
-    }
+    .portfolio-img { width: 100%; height: 220px; object-fit: cover; transition: transform 0.5s ease; }
+    .portfolio-card:hover .portfolio-img { transform: scale(1.06); }
     .portfolio-content { padding: 22px; }
     .portfolio-content h4 { font-family: 'Orbitron', sans-serif; color: #fff; margin-bottom: 8px; font-size: 17px; }
     .portfolio-content p { color: #94a3b8; font-size: 13px; line-height: 1.6; margin: 0; }
 
-    /* CARTES REVIEWS AVEC ANIMATION */
-    .review-card { 
-        background: #0a1020; border: 1px solid #1e2d4a; border-radius: 16px; padding: 20px; 
-        transition: all 0.3s ease;
-    }
-    .review-card:hover {
-        transform: translateY(-5px);
-        border-color: #38bdf8;
-        box-shadow: 0 8px 25px rgba(56, 189, 248, 0.1);
-    }
-    .avatar-circle {
-        width: 40px; height: 40px; border-radius: 50%;
-        background: linear-gradient(135deg, #38bdf8, #818cf8);
-        display: flex; align-items: center; justify-content: center; font-weight: 900; color: #060912;
-    }
+    /* AVIS */
+    .review-card { background: #0a1020; border: 1px solid #1e2d4a; border-radius: 16px; padding: 20px; transition: all 0.3s ease; }
+    .review-card:hover { transform: translateY(-5px); border-color: #38bdf8; box-shadow: 0 8px 25px rgba(56, 189, 248, 0.1); }
+    .avatar-circle { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #38bdf8, #818cf8); display: flex; align-items: center; justify-content: center; font-weight: 900; color: #060912; }
 
     /* FOOTER */
-    .footer-container {
-        text-align: center; margin-top: 80px; padding: 40px;
-        border-top: 1px solid rgba(56, 189, 248, 0.15);
-    }
+    .footer-container { text-align: center; margin-top: 80px; padding: 40px; border-top: 1px solid rgba(56, 189, 248, 0.15); }
     .footer-email { font-family: 'Orbitron', sans-serif; color: #38bdf8; font-weight: 700; text-decoration: none; }
     </style>
 """, unsafe_allow_html=True)
@@ -199,25 +194,38 @@ TEMOIGNAGES = [
     {"nom": "Aïda F.", "role": "DRH Tech", "texte": "Le Recruteur IA analyse 200 CVs en 30 secondes. Mon équipe RH adore.", "avatar": "A", "stars": "★★★★☆"}
 ]
 
+# Liens d'images thématiques de fond pour le catalogue
+IMG_MARKETING = "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=500&q=60"
+IMG_DEV = "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=500&q=60"
+IMG_SPORT = "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=500&q=60"
+IMG_DESIGN = "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=500&q=60"
+IMG_LOGISTIQUE = "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=500&q=60"
+IMG_JURIDIQUE = "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=500&q=60"
+IMG_FINANCE = "https://images.unsplash.com/photo-1621416894569-0f39ed31d247?w=500&q=60"
+IMG_RH = "https://images.unsplash.com/photo-1521737711867-e3b90473bd58?w=500&q=60"
+IMG_ECOMMERCE = "https://images.unsplash.com/photo-1556742044-3c52d6e88c62?w=500&q=60"
+IMG_SANTE = "https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=500&q=60"
+IMG_EDUCATION = "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=500&q=60"
+
 CATALOGUE = [
     # GRATUITS
-    {"type": "FREE", "dom": "MARKETING", "t": "Ambassadeur Growth", "badge": "populaire", "badge_label": "🔥 Populaire", "rating": "4.8", "users": "1 240", "d": "Stratégies SEO et visibilité digitale. Génère des plans de contenu viraux.", "skills": ["SEO", "Content"]},
-    {"type": "FREE", "dom": "MARKETING", "t": "Rédacteur Copywriter", "badge": "gratuit", "badge_label": "✨ Offert", "rating": "4.6", "users": "850", "d": "Conçoit des accroches publicitaires et des scripts de vente percutants.", "skills": ["Ads", "Sales"]},
-    {"type": "FREE", "dom": "DÉVELOPPEMENT", "t": "Architecte Python", "badge": "populaire", "badge_label": "⭐ Top", "rating": "4.9", "users": "980", "d": "Scripts automatisés et APIs REST. Debug express inclus.", "skills": ["Python", "API"]},
-    {"type": "FREE", "dom": "DÉVELOPPEMENT", "t": "Débuggeur JS", "badge": "gratuit", "badge_label": "✨ Offert", "rating": "4.7", "users": "640", "d": "Analyse et corrige vos bugs front-end en un temps record.", "skills": ["JavaScript", "Debug"]},
-    {"type": "FREE", "dom": "MARKETING", "t": "Créatif Visuel", "badge": "gratuit", "badge_label": "🎨 Design", "rating": "4.8", "users": "1 100", "d": "Générateur de prompts ultra-précis pour Midjourney et Stable Diffusion.", "skills": ["Prompts", "Design"]},
+    {"type": "FREE", "dom": "MARKETING", "bg": IMG_MARKETING, "t": "Ambassadeur Growth", "badge": "populaire", "badge_label": "🔥 Populaire", "rating": "4.8", "users": "1 240", "d": "Stratégies SEO et visibilité digitale. Génère des plans de contenu viraux.", "skills": ["SEO", "Content"]},
+    {"type": "FREE", "dom": "MARKETING", "bg": IMG_MARKETING, "t": "Rédacteur Copywriter", "badge": "gratuit", "badge_label": "✨ Offert", "rating": "4.6", "users": "850", "d": "Conçoit des accroches publicitaires et des scripts de vente percutants.", "skills": ["Ads", "Sales"]},
+    {"type": "FREE", "dom": "DÉVELOPPEMENT", "bg": IMG_DEV, "t": "Architecte Python", "badge": "populaire", "badge_label": "⭐ Top", "rating": "4.9", "users": "980", "d": "Scripts automatisés et APIs REST. Debug express inclus.", "skills": ["Python", "API"]},
+    {"type": "FREE", "dom": "DÉVELOPPEMENT", "bg": IMG_DEV, "t": "Débuggeur JS", "badge": "gratuit", "badge_label": "✨ Offert", "rating": "4.7", "users": "640", "d": "Analyse et corrige vos bugs front-end en un temps record.", "skills": ["JavaScript", "Debug"]},
+    {"type": "FREE", "dom": "MARKETING", "bg": IMG_DESIGN, "t": "Créatif Visuel", "badge": "gratuit", "badge_label": "🎨 Design", "rating": "4.8", "users": "1 100", "d": "Générateur de prompts ultra-précis pour Midjourney et Stable Diffusion.", "skills": ["Prompts", "Design"]},
     
     # PREMIUM
-    {"type": "PREMIUM", "dom": "SPORT", "t": "Analyste Sportif IA", "badge": "populaire", "badge_label": "⚽ Paris & Stats", "rating": "4.8", "users": "580", "d": "Analyse algorithmique des ligues de football et stratégies de paris.", "skills": ["Football", "Stats"]},
-    {"type": "PREMIUM", "dom": "DESIGN", "t": "Studio Avatar Pro", "badge": "bestseller", "badge_label": "📸 Studio", "rating": "4.9", "users": "890", "d": "Portraits photo-réalistes IA pro pour CV et réseaux sociaux.", "skills": ["Portraits", "Pro"]},
-    {"type": "PREMIUM", "dom": "DÉVELOPPEMENT", "t": "Développeur Jeux 2D", "badge": "tendance", "badge_label": "🎮 Gaming", "rating": "4.9", "users": "210", "d": "Scripts de mouvement et modélisation 2D complète.", "skills": ["Gaming", "Unity"]},
-    {"type": "PREMIUM", "dom": "LOGISTIQUE", "t": "Maître Logistique", "badge": "populaire", "badge_label": "💎 Premium", "rating": "4.7", "users": "430", "d": "Optimisation de flottes et gestion de chaîne d'approvisionnement.", "skills": ["Supply", "Fleet"]},
-    {"type": "PREMIUM", "dom": "JURIDIQUE", "t": "Avocat IA", "badge": "populaire", "badge_label": "💎 Premium", "rating": "4.9", "users": "312", "d": "Analyse de contrats et conformité RGPD internationale.", "skills": ["Contrats", "RGPD"]},
-    {"type": "PREMIUM", "dom": "FINANCE", "t": "Analyste Web3", "badge": "tendance", "badge_label": "🚀 DeFi", "rating": "4.6", "users": "520", "d": "Audit de smart contracts et analyse on-chain.", "skills": ["DeFi", "Crypto"]},
-    {"type": "PREMIUM", "dom": "RH", "t": "Recruteur Tech", "badge": "populaire", "badge_label": "💎 Premium", "rating": "4.8", "users": "275", "d": "Sourcing de talents et scoring de CVs automatisé.", "skills": ["Sourcing", "HR"]},
-    {"type": "PREMIUM", "dom": "E-COMMERCE", "t": "Expert Shopify", "badge": "bestseller", "badge_label": "💰 Profit", "rating": "4.7", "users": "610", "d": "Boutiques haute conversion et optimisation des funnels.", "skills": ["Shopify", "Sales"]},
-    {"type": "PREMIUM", "dom": "SANTÉ", "t": "Coach Santé IA", "badge": "bestseller", "badge_label": "❤️ Zen", "rating": "4.9", "users": "380", "d": "Plans nutritionnels et suivi de soins préventifs.", "skills": ["Santé", "Food"]},
-    {"type": "PREMIUM", "dom": "ÉDUCATION", "t": "Tuteur Universel", "badge": "populaire", "badge_label": "🎓 Éducation", "rating": "4.8", "users": "720", "d": "Cours adaptatifs et parcours d'apprentissage personnalisé.", "skills": ["IA", "Cours"]}
+    {"type": "PREMIUM", "dom": "SPORT", "bg": IMG_SPORT, "t": "Analyste Sportif IA", "badge": "populaire", "badge_label": "⚽ Paris & Stats", "rating": "4.8", "users": "580", "d": "Analyse algorithmique des ligues de football et stratégies de paris.", "skills": ["Football", "Stats"]},
+    {"type": "PREMIUM", "dom": "DESIGN", "bg": IMG_DESIGN, "t": "Studio Avatar Pro", "badge": "bestseller", "badge_label": "📸 Studio", "rating": "4.9", "users": "890", "d": "Portraits photo-réalistes IA pro pour CV et réseaux sociaux.", "skills": ["Portraits", "Pro"]},
+    {"type": "PREMIUM", "dom": "DÉVELOPPEMENT", "bg": IMG_DEV, "t": "Développeur Jeux 2D", "badge": "tendance", "badge_label": "🎮 Gaming", "rating": "4.9", "users": "210", "d": "Scripts de mouvement et modélisation 2D complète (Sir Galette).", "skills": ["Gaming", "Unity"]},
+    {"type": "PREMIUM", "dom": "LOGISTIQUE", "bg": IMG_LOGISTIQUE, "t": "Maître Logistique", "badge": "populaire", "badge_label": "💎 Premium", "rating": "4.7", "users": "430", "d": "Optimisation de flottes et gestion de chaîne d'approvisionnement.", "skills": ["Supply", "Fleet"]},
+    {"type": "PREMIUM", "dom": "JURIDIQUE", "bg": IMG_JURIDIQUE, "t": "Avocat IA", "badge": "populaire", "badge_label": "💎 Premium", "rating": "4.9", "users": "312", "d": "Analyse de contrats et conformité RGPD internationale.", "skills": ["Contrats", "RGPD"]},
+    {"type": "PREMIUM", "dom": "FINANCE", "bg": IMG_FINANCE, "t": "Analyste Web3", "badge": "tendance", "badge_label": "🚀 DeFi", "rating": "4.6", "users": "520", "d": "Audit de smart contracts et analyse on-chain.", "skills": ["DeFi", "Crypto"]},
+    {"type": "PREMIUM", "dom": "RH", "bg": IMG_RH, "t": "Recruteur Tech", "badge": "populaire", "badge_label": "💎 Premium", "rating": "4.8", "users": "275", "d": "Sourcing de talents et scoring de CVs automatisé.", "skills": ["Sourcing", "HR"]},
+    {"type": "PREMIUM", "dom": "E-COMMERCE", "bg": IMG_ECOMMERCE, "t": "Expert Shopify", "badge": "bestseller", "badge_label": "💰 Profit", "rating": "4.7", "users": "610", "d": "Boutiques haute conversion et optimisation des funnels Gumroad.", "skills": ["Shopify", "Sales"]},
+    {"type": "PREMIUM", "dom": "SANTÉ", "bg": IMG_SANTE, "t": "Coach Santé IA", "badge": "bestseller", "badge_label": "❤️ Zen", "rating": "4.9", "users": "380", "d": "Plans nutritionnels et suivi de soins préventifs.", "skills": ["Santé", "Food"]},
+    {"type": "PREMIUM", "dom": "ÉDUCATION", "bg": IMG_EDUCATION, "t": "Tuteur Universel", "badge": "populaire", "badge_label": "🎓 Éducation", "rating": "4.8", "users": "720", "d": "Cours adaptatifs et parcours d'apprentissage personnalisé.", "skills": ["IA", "Cours"]}
 ]
 
 # ─── HEADER AVEC LOGO ────────────────────────────────────────────────────────
@@ -250,13 +258,13 @@ with tab1:
                             btn_html = f'<a class="btn-free" href="#">🚀 ACCÈS GRATUIT</a>'
                         
                         st.markdown(f"""
-                        <div class="agent-card {'premium' if agent['type'] == 'PREMIUM' else ''}">
+                        <div class="agent-card {'premium' if agent['type'] == 'PREMIUM' else ''}" style="background-image: url('{agent['bg']}');">
                             <div>
                                 <span class="badge-tag badge-{agent['badge']}">{agent['badge_label']}</span>
                                 <div class="agent-dom">{agent['dom']}</div>
                                 <div class="agent-title">{agent['t']}</div>
                                 <div class="agent-desc">{agent['d']}</div>
-                                <div style="font-size: 11px; color: #64748b;">⭐ {agent['rating']} | 👥 {agent['users']} users</div>
+                                <div style="font-size: 11px; color: #a1a1aa; font-weight: 700;">⭐ {agent['rating']} | 👥 {agent['users']} users</div>
                             </div>
                             <div>
                                 <div style="margin: 10px 0;">{skills_html}</div>
