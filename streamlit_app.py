@@ -1,206 +1,355 @@
 import streamlit as st
-import json
-import random
-import time
+import urllib.parse
 
-# --- 1. CONFIGURATION ---
-st.set_page_config(page_title="FORGE AGENT IA | MARKETPLACE", layout="wide")
+# ─── CONFIGURATION DE LA PAGE ────────────────────────────────────────────────
+st.set_page_config(page_title="Forge IA", page_icon="⚒️", layout="wide")
 
-# --- 2. ENGINE DE DESIGN AVANCÉ ---
-def inject_vanguard_ui():
-    icons = ["🤖", "⚙️", "💻", "🧠", "⚛️", "🛡️", "⚡", "🌐", "💾", "🔑", "📈", "🛒"]
-    html_icons = "".join([f'<div class="bg-icon" style="left:{random.randint(0, 95)}%; animation-duration:{random.randint(10, 25)}s; animation-delay:{random.randint(0, 10)}s;">{random.choice(icons)}</div>' for _ in range(25)])
+# ─── INJECTION DES STYLES CSS COMPLETS ───────────────────────────────────────
+st.markdown("""
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Syne:wght=400;700;800;900&display=swap');
     
-    st.markdown(f"""
-        <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Rajdhani:wght@500;700&family=Fira+Code:wght@400;500&display=swap');
-        
-        .stApp {{ background-color: #010103; color: #f0f0f0; font-family: 'Rajdhani', sans-serif; }}
-        
-        /* Background */
-        @keyframes fall {{ 0% {{ transform: translateY(-10vh) rotate(0deg); opacity: 0; }} 15% {{ opacity: 0.1; }} 100% {{ transform: translateY(110vh) rotate(360deg); opacity: 0; }} }}
-        .bg-icon {{ position: fixed; top: -10%; z-index: 0; pointer-events: none; animation: fall linear infinite; font-size: 20px; }}
+    /* FOND GLOBAL DE LA PAGE */
+    html, body, [data-testid="stAppViewContainer"], [data-testid="stHeader"],
+    [data-testid="stMainBlockContainer"] {
+        background: #060912 !important;
+        background-image: radial-gradient(circle at 20% 50%, rgba(56, 189, 248, 0.06) 0%, transparent 60%), 
+                          radial-gradient(circle at 80% 20%, rgba(129, 140, 248, 0.06) 0%, transparent 60%) !important;
+        color: #e2e8f0 !important;
+        font-family: 'Syne', sans-serif !important;
+    }
 
-        /* TITRE : FORGE AGENT IA */
-        .title-container {{ text-align: center; margin-bottom: 40px; padding: 20px; }}
-        .main-title {{ 
-            font-family: 'Orbitron'; font-weight: 900; font-size: 3.8rem;
-            background: linear-gradient(to bottom, #ffffff 30%, #00f2fe 100%);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            text-transform: uppercase; letter-spacing: 8px;
-            filter: drop-shadow(0 0 15px rgba(0, 242, 254, 0.3));
-            margin-bottom: 0;
-        }}
-        .sub-logo {{ width: 60px; height: 5px; background: #00f2fe; margin: 10px auto; border-radius: 5px; box-shadow: 0 0 15px #00f2fe; }}
+    /* EN-TÊTE PLATFORME */
+    .hero-badge-container {
+        text-align: center;
+        margin-top: 15px;
+    }
+    .hero-badge {
+        display: inline-block;
+        background: rgba(56, 189, 248, 0.1);
+        border: 1px solid rgba(56, 189, 248, 0.3);
+        color: #38bdf8;
+        border-radius: 20px;
+        padding: 4px 14px;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+    }
+    .hero-title {
+        font-size: 50px;
+        font-weight: 900 !important;
+        text-align: center;
+        letter-spacing: -2px;
+        background: linear-gradient(90deg, #38bdf8, #818cf8, #f472b6);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        line-height: 1.1;
+        margin-bottom: 10px;
+        margin-top: 10px;
+    }
+    .hero-sub {
+        color: #94a3b8;
+        text-align: center;
+        font-size: 16px;
+        font-weight: 700 !important;
+        max-width: 560px;
+        margin: 0 auto 30px auto;
+    }
 
-        /* TICKER */
-        .ticker-wrapper {{ width: 100%; overflow: hidden; background: rgba(0, 242, 254, 0.03); border-y: 1px solid rgba(0, 242, 254, 0.1); padding: 12px 0; margin-bottom: 40px; }}
-        .ticker-text {{ display: inline-block; white-space: nowrap; animation: ticker 60s linear infinite; font-family: 'Orbitron'; font-size: 0.65rem; color: #00f2fe; opacity: 0.8; letter-spacing: 2px; text-transform: uppercase; }}
-        @keyframes ticker {{ 0% {{ transform: translateX(100%); }} 100% {{ transform: translateX(-100%); }} }}
+    /* CARTES DES AGENTS */
+    .agent-card {
+        background: #0a1020 !important;
+        border: 1px solid #1e2d4a !important;
+        border-radius: 16px !important;
+        padding: 22px !important;
+        margin-bottom: 20px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-between !important;
+        min-height: 400px;
+        box-sizing: border-box;
+    }
+    .agent-card.premium {
+        background: linear-gradient(145deg, #0d1526, #111827) !important;
+        border: 1px solid rgba(129, 140, 248, 0.3) !important;
+        box-shadow: 0 4px 30px rgba(129, 140, 248, 0.08) !important;
+    }
+    .agent-title {
+        font-size: 18px;
+        font-weight: 800 !important;
+        color: #f1f5f9 !important;
+        margin: 6px 0 4px 0 !important;
+    }
+    .agent-dom {
+        font-size: 11px;
+        font-weight: 700 !important;
+        color: #38bdf8 !important;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+    }
+    .agent-desc {
+        color: #94a3b8 !important;
+        font-size: 13px !important;
+        line-height: 1.6 !important;
+        margin: 10px 0 !important;
+    }
+    .agent-meta {
+        font-size: 12px;
+        color: #64748b;
+        margin-bottom: 10px;
+    }
 
-        /* --- CARTES CYBER-PLATE --- */
-        .agent-card {{ 
-            background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
-            border: 1px solid rgba(0, 242, 254, 0.1);
-            clip-path: polygon(0% 0%, 90% 0%, 100% 12%, 100% 100%, 10% 100%, 0% 88%);
-            padding: 30px; margin-bottom: 25px; transition: 0.4s;
-            height: 280px; display: flex; flex-direction: column; justify-content: space-between;
-            position: relative;
-        }}
-        .agent-card::before {{
-            content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(45deg, transparent 95%, rgba(0, 242, 254, 0.2) 100%);
-        }}
-        .agent-card:hover {{ 
-            border-color: #00f2fe; background: rgba(0, 242, 254, 0.05);
-            transform: scale(1.02) rotate(0.5deg);
-            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.6), inset 0 0 20px rgba(0, 242, 254, 0.1);
-        }}
-        .premium-border {{ border: 1px solid rgba(255, 215, 0, 0.3) !important; }}
-        .premium-border::before {{ background: linear-gradient(45deg, transparent 95%, rgba(255, 215, 0, 0.2) 100%); }}
-        .premium-border:hover {{ border-color: #ffd700 !important; box-shadow: 0 15px 50px rgba(0, 0, 0, 0.6), inset 0 0 20px rgba(255, 215, 0, 0.1); }}
+    /* BADGES INTERNES DES CARTES */
+    .badge-tag {
+        display: inline-block;
+        font-size: 11px;
+        font-weight: 700;
+        padding: 3px 10px;
+        border-radius: 20px;
+        margin-bottom: 10px;
+    }
+    .badge-populaire { background: rgba(56, 189, 248, 0.1); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.2); }
+    .badge-tendance { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
+    .badge-bestseller { background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); }
+    .badge-gratuit { background: rgba(16, 185, 129, 0.12); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.25); }
+    
+    /* SKILLS TAGS */
+    .skill-tag {
+        display: inline-block !important;
+        background: rgba(255, 255, 255, 0.04) !important;
+        border: 1px solid #1e2d4a !important;
+        border-radius: 6px !important;
+        padding: 2px 8px !important;
+        font-size: 11px !important;
+        color: #cbd5e1 !important;
+        margin-right: 4px !important;
+        margin-bottom: 4px !important;
+    }
 
-        .tag {{ font-family: 'Orbitron'; font-size: 0.6rem; color: #666; letter-spacing: 2px; text-transform: uppercase; }}
-        .name {{ font-family: 'Orbitron'; font-size: 1.3rem; color: #fff; font-weight: 700; margin-top: 10px; }}
-        .desc {{ color: #888; font-size: 0.9rem; margin-top: 10px; line-height: 1.5; }}
-        .price {{ font-family: 'Orbitron'; font-size: 1.3rem; font-weight: 900; margin-top: 15px; }}
+    /* BOUTONS D'ACTION ACTIONNABLES */
+    .btn-wa {
+        display: block !important;
+        text-align: center !important;
+        background: linear-gradient(135deg, #38bdf8, #818cf8) !important;
+        color: #060912 !important;
+        font-weight: 800 !important;
+        font-size: 13px !important;
+        padding: 10px 0 !important;
+        border-radius: 10px !important;
+        text-decoration: none !important;
+        margin-top: 14px !important;
+        transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+    .btn-wa:hover {
+        transform: translateY(-2px);
+        opacity: 0.9;
+        color: #060912 !important;
+    }
+    .btn-free {
+        display: block !important;
+        text-align: center !important;
+        background: rgba(16, 185, 129, 0.15) !important;
+        border: 1px solid rgba(16, 185, 129, 0.3) !important;
+        color: #10b981 !important;
+        font-weight: 800 !important;
+        font-size: 13px !important;
+        padding: 10px 0 !important;
+        border-radius: 10px !important;
+        text-decoration: none !important;
+        margin-top: 14px !important;
+    }
 
-        /* --- BOUTON WHATSAPP GÉANT --- */
-        .wa-container {{
-            margin-top: 60px; text-align: center; padding: 50px 20px;
-            background: radial-gradient(circle at center, rgba(37, 211, 102, 0.08) 0%, transparent 60%);
-            border-radius: 20px;
-        }}
-        .wa-btn {{
-            display: inline-block; padding: 22px 60px;
-            background: linear-gradient(90deg, #25D366 0%, #128C7E 100%);
-            color: white !important; font-family: 'Orbitron'; font-weight: 900;
-            text-decoration: none; border-radius: 50px;
-            font-size: 1.3rem; letter-spacing: 2px;
-            box-shadow: 0 0 30px rgba(37, 211, 102, 0.4);
-            transition: 0.3s; animation: pulseWA 2s infinite;
-        }}
-        .wa-btn:hover {{ transform: scale(1.05); box-shadow: 0 0 60px rgba(37, 211, 102, 0.7); }}
-        @keyframes pulseWA {{ 0% {{ box-shadow: 0 0 20px rgba(37, 211, 102, 0.4); }} 50% {{ box-shadow: 0 0 45px rgba(37, 211, 102, 0.8); }} 100% {{ box-shadow: 0 0 20px rgba(37, 211, 102, 0.4); }} }}
+    /* AVIS CLIENTS */
+    .review-card {
+        background: #0a1020;
+        border: 1px solid #1e2d4a;
+        border-radius: 16px;
+        padding: 24px;
+        margin-bottom: 20px;
+        height: 100%;
+    }
+    .review-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 12px;
+    }
+    .avatar-circle {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #38bdf8, #818cf8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 900;
+        color: #060912;
+        font-size: 18px;
+    }
+    .review-info h4 {
+        margin: 0;
+        color: #f1f5f9;
+        font-size: 15px;
+    }
+    .review-info p {
+        margin: 0;
+        color: #64748b;
+        font-size: 12px;
+    }
+    .review-stars {
+        color: #f59e0b;
+        margin-bottom: 8px;
+    }
 
-        .matrix-box {{ background: #000; color: #00ff41; font-family: 'Fira Code'; padding: 30px; border: 1px solid #00f2fe; border-radius: 4px; font-size: 1.1rem; }}
-        </style>
-        
-        {html_icons}
-        
-        <div class="title-container">
-            <h1 class="main-title">FORGE AGENT IA</h1>
-            <div class="sub-logo"></div>
-        </div>
+    /* STYLE DES TABS NATIVES STREAMLIT */
+    button[data-baseweb="tab"] {
+        font-weight: 700 !important;
+        letter-spacing: 0.5px;
+    }
 
-        <div class="ticker-wrapper">
-            <div class="ticker-text">
-                STATUT SYSTÈME : OPTIMISÉ -- RÉSEAU GLOBAL ACTIF -- NOUVELLES UNITÉS CHARGÉES -- DÉPLOIEMENT DES RÉSEAUX NEURONAUX -- ⚡ FORGE RÉCENTE : EXPERT LOGISTIQUE (DAKAR) -- 💎 ACHAT RÉCENT : STRATÈGE WEB3 (PARIS) -- ⚡ 3,450+ AGENTS EN LIGNE...
-            </div>
-        </div>
-    """, unsafe_allow_html=True)
+    /* FOOTER DE LA PAGE */
+    .footer-container {
+        text-align: center;
+        margin-top: 60px;
+        padding-top: 20px;
+        border-top: 1px solid #1e2d4a;
+    }
+    .footer-email {
+        color: #94a3b8;
+        font-size: 14px;
+        font-weight: 700;
+        text-decoration: none;
+        transition: color 0.2s ease;
+    }
+    .footer-email:hover {
+        color: #38bdf8;
+    }
+    </style>
+""", unsafe_allow_html=True)
 
-inject_vanguard_ui()
+# ─── CONFIGURATION DES VARIABLES GLOBALES ────────────────────────────────────
+WHATSAPP = "221771122598"
+PRIX = "10 $"
 
-# --- 3. CATALOGUE MASSIF ---
 CATALOGUE = [
-    # --- AGENTS GRATUITS (8) ---
-    {"id": "amb", "type": "FREE", "dom": "MARKETING", "t": "Ambassadeur Growth", "p": "GRATUIT", "d": "Protocoles de croissance virale et stratégies SEO à haute conversion."},
-    {"id": "py", "type": "FREE", "dom": "DÉVELOPPEMENT", "t": "Architecte Python", "p": "GRATUIT", "d": "Génération de code full-stack et débogage neuronal avancé."},
-    {"id": "edu", "type": "FREE", "dom": "ÉDUCATION", "t": "Tuteur Universel", "p": "GRATUIT", "d": "Assistance académique multidisciplinaire et méthodes d'apprentissage."},
-    {"id": "food", "type": "FREE", "dom": "GASTRONOMIE", "t": "Chef Étoilé IA", "p": "GRATUIT", "d": "Création de recettes fusion internationales et gestion des stocks."},
-    {"id": "copy", "type": "FREE", "dom": "RÉDACTION", "t": "Plume Virtuelle", "p": "GRATUIT", "d": "Correction orthographique, reformulation et copywriting percutant."},
-    {"id": "fit", "type": "FREE", "dom": "SANTÉ", "t": "Coach Sportif Pro", "p": "GRATUIT", "d": "Programmes d'entraînement sur mesure et plans nutritionnels optimisés."},
-    {"id": "data", "type": "FREE", "dom": "ANALYSE", "t": "Maître Excel", "p": "GRATUIT", "d": "Génération de macros, formules complexes et nettoyage de données."},
-    {"id": "idea", "type": "FREE", "dom": "ENTREPRENEURIAT", "t": "Générateur d'Idées", "p": "GRATUIT", "d": "Brainstorming de startups, noms de marques et business models."},
+    # AGENTS GRATUITS
+    {"type": "FREE", "dom": "MARKETING", "t": "Ambassadeur Growth", "badge": "populaire", "badge_label": "🔥 Populaire", "rating": "★★★★★ 4.8", "users": "1 240", "d": "Expert en stratégies SEO, growth hacking et visibilité digitale. Génère des plans de contenu viraux.", "skills": ["SEO", "Content", "Social Media"]},
+    {"type": "FREE", "dom": "MARKETING", "t": "Rédacteur Copywriter", "badge": "gratuit", "badge_label": "✨ Offert", "rating": "★★★★☆ 4.6", "users": "850", "d": "Conçoit des accroches publicitaires percutantes, des pages de capture et des scripts de vente optimisés.", "skills": ["Copywriting", "Ads", "Sales"]},
+    {"type": "FREE", "dom": "DÉVELOPPEMENT", "t": "Architecte Python", "badge": "populaire", "badge_label": "⭐ Top noté", "rating": "★★★★★ 4.9", "users": "980", "d": "Spécialiste en scripts automatisés, APIs REST et backend scalable. Debug express inclus.", "skills": ["Python", "API", "Automation"]},
+    {"type": "FREE", "dom": "DÉVELOPPEMENT", "t": "Débuggeur JavaScript", "badge": "gratuit", "badge_label": "✨ Offert", "rating": "★★★★☆ 4.7", "users": "640", "d": "Analyse vos scripts JS/TypeScript, corrige les bugs front-end et optimise la vitesse de chargement.", "skills": ["JavaScript", "Debug", "Front-end"]},
+    {"type": "FREE", "dom": "MARKETING", "t": "Créatif Visuel", "badge": "gratuit", "badge_label": "🎨 Design", "rating": "★★★★★ 4.8", "users": "1 100", "d": "Générateur de prompts ultra-précis pour Midjourney et Stable Diffusion. Crée des chartes graphiques.", "skills": ["Prompts", "Midjourney", "Design AI"]},
 
-    # --- AGENTS PREMIUM (14) ---
-    {"id": "log", "type": "PREMIUM", "dom": "LOGISTIQUE", "t": "Maître de la Logistique", "p": "4.99 €", "d": "Optimisation des itinéraires de livraison et gestion de flottes internationales.", "link": "https://gumroad.com/l/link1"},
-    {"id": "law", "type": "PREMIUM", "dom": "JURIDIQUE", "t": "Avocat d'Affaires IA", "p": "8.50 €", "d": "Analyse de contrats internationaux et protection de la propriété intellectuelle.", "link": "https://gumroad.com/l/link2"},
-    {"id": "crypto", "type": "PREMIUM", "dom": "FINANCE", "t": "Analyste Web3 & Crypto", "p": "9.99 €", "d": "Audit blockchain en temps réel, signaux de trading et tendances du marché.", "link": "https://gumroad.com/l/link3"},
-    {"id": "hr", "type": "PREMIUM", "dom": "RESSOURCES HUMAINES", "t": "Chasseur de Têtes Elite", "p": "3.50 €", "d": "Sourcing automatisé et évaluation technique des développeurs mondiaux.", "link": "https://gumroad.com/l/link4"},
-    {"id": "ecom", "type": "PREMIUM", "dom": "E-COMMERCE", "t": "Stratège Shopify", "p": "5.99 €", "d": "Optimisation du taux de conversion, descriptions de produits et tunnel de vente.", "link": "https://gumroad.com/l/link5"},
-    {"id": "ads", "type": "PREMIUM", "dom": "PUBLICITÉ", "t": "Sniper Facebook Ads", "p": "6.50 €", "d": "Création d'angles publicitaires, ciblage d'audience et gestion de budget ROI.", "link": "https://gumroad.com/l/link6"},
-    {"id": "cloud", "type": "PREMIUM", "dom": "INFRASTRUCTURE", "t": "Architecte Cloud AWS", "p": "8.99 €", "d": "Conception de serveurs scalables, sécurité réseau et réduction des coûts cloud.", "link": "https://gumroad.com/l/link7"},
-    {"id": "ux", "type": "PREMIUM", "dom": "DESIGN", "t": "Directeur UX/UI", "p": "4.50 €", "d": "Critique d'interfaces, psychologie des couleurs et conception de wireframes.", "link": "https://gumroad.com/l/link8"},
-    {"id": "forex", "type": "PREMIUM", "dom": "TRADING", "t": "Algo-Trader Forex", "p": "9.50 €", "d": "Analyse technique approfondie, gestion des risques et stratégies scalping.", "link": "https://gumroad.com/l/link9"},
-    {"id": "admin", "type": "PREMIUM", "dom": "ADMINISTRATION", "t": "Assistante Virtuelle", "p": "3.99 €", "d": "Gestion des emails, priorisation des agendas et automatisation des tâches.", "link": "https://gumroad.com/l/link10"},
-    {"id": "sec", "type": "PREMIUM", "dom": "CYBERSÉCURITÉ", "t": "Pentester Cyber", "p": "7.99 €", "d": "Audit de vulnérabilités, protection contre les failles et sécurisation de données.", "link": "https://gumroad.com/l/link11"},
-    {"id": "lang", "type": "PREMIUM", "dom": "TRADUCTION", "t": "Linguiste Polyglotte", "p": "3.50 €", "d": "Traduction native avec contexte culturel dans plus de 20 langues courantes.", "link": "https://gumroad.com/l/link12"},
-    {"id": "media", "type": "PREMIUM", "dom": "CRÉATION VIDÉO", "t": "Réalisateur TikTok/Reels", "p": "5.50 €", "d": "Scripts viraux, accroches hypnotiques (hooks) et directives de montage.", "link": "https://gumroad.com/l/link13"},
-    {"id": "immo", "type": "PREMIUM", "dom": "IMMOBILIER", "t": "Investisseur Immo", "p": "6.99 €", "d": "Calcul de rentabilité locative, analyse de marché et montage de dossiers bancaires.", "link": "https://gumroad.com/l/link14"}
+    # AGENTS PREMIUM
+    {"type": "PREMIUM", "dom": "LOGISTIQUE", "t": "Maître Logistique", "badge": "populaire", "badge_label": "💎 Premium", "rating": "★★★★☆ 4.7", "users": "430", "d": "Optimisation de flottes, gestion de chaîne d'approvisionnement et prévision de stocks en temps réel.", "skills": ["Supply Chain", "Fleet", "Stock AI"]},
+    {"type": "PREMIUM", "dom": "JURIDIQUE", "t": "Avocat IA", "badge": "populaire", "badge_label": "💎 Premium", "rating": "★★★★★ 4.9", "users": "312", "d": "Analyse de contrats, conformité RGPD et juridique internationale. Rédaction de clauses sur-mesure.", "skills": ["Contrats", "RGPD", "Compliance"]},
+    {"type": "PREMIUM", "dom": "FINANCE", "t": "Analyste Web3", "badge": "tendance", "badge_label": "🚀 Tendance", "rating": "★★★★☆ 4.6", "users": "520", "d": "Audit de smart contracts, analyse on-chain et tendances DeFi. Alertes personnalisées en temps réel.", "skills": ["DeFi", "Smart Contracts", "On-chain"]},
+    {"type": "PREMIUM", "dom": "RH", "t": "Recruteur Tech", "badge": "populaire", "badge_label": "💎 Premium", "rating": "★★★★☆ 4.8", "users": "275", "d": "Sourcing de talents, scoring de CVs par IA et évaluation de compétences techniques en profondeur.", "skills": ["Sourcing", "CV Scoring", "Interview AI"]},
+    {"type": "PREMIUM", "dom": "E-COMMERCE", "t": "Expert Shopify", "badge": "bestseller", "badge_label": "💰 Best-seller", "rating": "★★★★☆ 4.7", "users": "610", "d": "Configuration de boutiques haute conversion, A/B testing produits et optimisation des funnels.", "skills": ["Shopify", "Conversion", "Funnel"]},
+    {"type": "PREMIUM", "dom": "SANTÉ", "t": "Coach Santé IA", "badge": "bestseller", "badge_label": "❤️ Bien-être", "rating": "★★★★★ 4.9", "users": "380", "d": "Plans nutritionnels personnalisés, suivi de symptômes et recommandations de soins préventifs.", "skills": ["Nutrition", "Symptômes", "Prévention"]},
+    {"type": "PREMIUM", "dom": "ÉDUCATION", "t": "Tuteur Universel", "badge": "populaire", "badge_label": "🎓 Éducation", "rating": "★★★★☆ 4.8", "users": "720", "d": "Cours adaptatifs, quiz génératifs et parcours d'apprentissage personnalisé pour toute discipline.", "skills": ["Cours IA", "Quiz", "Parcours"]}
 ]
 
-if "view" not in st.session_state: st.session_state.view = "market"
+TEMOIGNAGES = [
+    {"nom": "Karim B.", "role": "CEO Startup", "texte": "L'Avocat IA m'a économisé 3000$ en frais juridiques dès le premier mois. Incroyable.", "avatar": "K", "stars": "★★★★★"},
+    {"nom": "Sophie L.", "role": "E-commerçante", "texte": "Mon CA a bondi de +40% grâce à l'Expert Shopify. ROI immédiat sur l'investissement.", "avatar": "S", "stars": "★★★★★"},
+    {"nom": "Marcus T.", "role": "Trader Crypto", "texte": "L'Analyste Web3 m'alerte avant les mouvements de marché. Un must-have absolu.", "avatar": "M", "stars": "★★★★★"},
+    {"nom": "Aïda F.", "role": "DRH Tech", "texte": "Le Recruteur IA analyse 200 CVs en 30 secondes. Mon équipe RH adore.", "avatar": "A", "stars": "★★★★☆"}
+]
 
-# --- 4. MARKETPLACE ---
-if st.session_state.view == "market":
-    st.write("<center style='color:#666; margin-bottom:40px; letter-spacing:1px; font-size:1.1rem;'>SÉLECTIONNEZ UNE UNITÉ. INITIALISEZ LA FORGE. DÉPLOYEZ.</center>", unsafe_allow_html=True)
-    
-    cols = st.columns(2)
-    for i, item in enumerate(CATALOGUE):
-        is_p = item["type"] == "PREMIUM"
-        accent = "#ffd700" if is_p else "#00f2fe"
-        with cols[i % 2]:
-            st.markdown(f"""
-            <div class="agent-card {'premium-border' if is_p else ''}">
-                <div>
-                    <div class="tag">{item['dom']} {'★ PREMIUM' if is_p else '● LIBRE'}</div>
-                    <div class="name">{item['t']}</div>
-                    <div class="desc">{item['d']}</div>
-                </div>
-                <div class="price" style="color:{accent};">{item['p']}</div>
-            </div>
-            """, unsafe_allow_html=True)
-            if is_p:
-                st.link_button("💎 ACQUÉRIR L'UNITÉ", item['link'], use_container_width=True)
-            else:
-                if st.button(f"⚒️ INITIALISER LA FORGE", key=f"f_{i}", use_container_width=True):
-                    st.session_state.selected_item = item
-                    st.session_state.view = "forge_custom"
-                    st.rerun()
+# ─── HERO HEADER ─────────────────────────────────────────────────────────────
+st.markdown('<div class="hero-badge-container"><span class="hero-badge">⚒️ Forge IA — Plateforme Agents</span></div>', unsafe_allow_html=True)
+st.markdown('<div class="hero-title">Des agents IA taillés<br>pour vos ambitions</div>', unsafe_allow_html=True)
+st.markdown('<div class="hero-sub">Choisissez, testez en direct et déployez des agents spécialisés pour booster chaque aspect de votre business.</div>', unsafe_allow_html=True)
 
-    # --- SECTION WHATSAPP GÉANTE (EN FRANÇAIS) ---
-    st.markdown(f"""
-        <div class="wa-container">
-            <h2 style="font-family:'Orbitron'; font-size:1.8rem; margin-bottom:15px; color:#fff;">BESOIN D'UNE IA SUR MESURE ?</h2>
-            <p style="color:#aaa; font-size:1.1rem; margin-bottom:35px;">Nos ingénieurs développent votre agent personnalisé sous 48h.</p>
-            <a href="https://wa.me/221771122598?text=Bonjour%20Forge%20Agent%20IA,%20je%20souhaite%20commander%20un%20agent%20IA%20sur%20mesure." 
-               class="wa-btn" target="_blank">
-               COMMANDER SUR WHATSAPP
-            </a>
-        </div>
-    """, unsafe_allow_html=True)
+# ─── NAVIGATION PRINCIPALE ───────────────────────────────────────────────────
+tab1, tab2, tab3 = st.tabs(["🤖 Catalogue", "⭐ Avis clients", "❓ FAQ"])
 
-# --- 5. MOTEUR DE FORGE ---
-elif st.session_state.view == "forge_custom":
-    st.markdown(f"### SYSTÈME PRÊT : {st.session_state.selected_item['t']}")
-    name = st.text_input("Désignation de l'Unité", value=st.session_state.selected_item['t'])
-    instr = st.text_area("Protocoles Neuronaux", placeholder="Injectez ici vos instructions comportementales spécifiques...", height=150)
-    
-    col1, col2 = st.columns([1, 1])
+with tab1:
+    col1, col2 = st.columns([2, 1])
     with col1:
-        if st.button("🚀 EXÉCUTER LE SÉQUENÇAGE", use_container_width=True):
-            st.session_state.temp_config = {"name": name, "instr": instr}
-            st.session_state.view = "matrix"
-            st.rerun()
+        search = st.text_input("🔍 Rechercher un agent...", "")
     with col2:
-        st.button("ANNULER", use_container_width=True, on_click=lambda: st.session_state.update({"view": "market"}))
+        filtre = st.selectbox("Domaines", ["TOUS", "MARKETING", "DÉVELOPPEMENT", "LOGISTIQUE", "JURIDIQUE", "FINANCE", "RH", "E-COMMERCE", "SANTÉ", "ÉDUCATION"])
 
-# --- 6. SÉQUENÇAGE MATRIX ---
-elif st.session_state.view == "matrix":
-    st.markdown('<div class="matrix-box">', unsafe_allow_html=True)
-    p = st.empty()
-    for _ in range(16):
-        lines = [f"ANALYSE_NOYAU_{random.randint(100,999)}...", "CONTOURNEMENT_DES_LIMITES_ACTIF", "CRYPTAGE_DE_L_UNITÉ_EN_COURS...", "CONNEXION_AU_RÉSEAU_GLOBAL"]
-        p.markdown(f"<div>{random.choice(lines)}</div>" * 6, unsafe_allow_html=True)
-        time.sleep(0.12)
-    st.session_state.view = "ready"
-    st.rerun()
+    # Filtrer les agents
+    agents_filtres = [a for a in CATALOGUE if (filtre == "TOUS" or a["dom"] == filtre) and (search.lower() in a["t"].lower() or search.lower() in a["d"].lower() or search.lower() in a["dom"].lower())]
 
-# --- 7. UNITÉ FINALE ---
-elif st.session_state.view == "ready":
-    st.balloons()
-    st.success("UNITÉ FORGÉE AVEC SUCCÈS")
-    st.download_button("📥 TÉLÉCHARGER L'AGENT (JSON)", json.dumps(st.session_state.temp_config, indent=4), "agent_ia.json", use_container_width=True)
-    st.button("RETOUR AU HUB", use_container_width=True, on_click=lambda: st.session_state.update({"view": "market"}))
+    # Grille à deux colonnes stable
+    if agents_filtres:
+        for i in range(0, len(agents_filtres), 2):
+            cols = st.columns(2)
+            for j in range(2):
+                if i + j < len(agents_filtres):
+                    agent = agents_filtres[i + j]
+                    with cols[j]:
+                        skills_html = "".join([f'<span class="skill-tag">{s}</span>' for s in agent["skills"]])
+                        
+                        # Configuration du bouton d'action selon le type d'agent
+                        if agent["type"] == "PREMIUM":
+                            msg = f"Bonjour, je souhaite acquérir l'agent Premium : {agent['t']}"
+                            link = f"https://wa.me/{WHATSAPP}?text={urllib.parse.quote(msg)}"
+                            btn_html = f'<a class="btn-wa" href="{link}" target="_blank">💳 Acquérir — {PRIX}</a>'
+                        else:
+                            btn_html = f'<a class="btn-free" href="#">🚀 Agent Gratuit (Disponible)</a>'
+                        
+                        card_style = "agent-card premium" if agent["type"] == "PREMIUM" else "agent-card"
+                        
+                        # Rendu HTML complet de la carte
+                        st.markdown(f"""
+                        <div class="{card_style}">
+                            <div>
+                                <span class="badge-tag badge-{agent['badge']}">{agent['badge_label']}</span>
+                                <div class="agent-dom">{agent['dom']}</div>
+                                <div class="agent-title">{agent['t']}</div>
+                                <div class="agent-desc">{agent['d']}</div>
+                                <div class="agent-meta">⭐ {agent['rating']} | 👥 {agent['users']} utilisateurs</div>
+                            </div>
+                            <div>
+                                <div style="margin-top: 10px; margin-bottom: 5px;">{skills_html}</div>
+                                {btn_html}
+                            </div>
+                        </div>
+                        """, unsafe_allow_html=True)
+    else:
+        st.info("Aucun agent ne correspond à votre recherche.")
+
+with tab2:
+    # Affichage des témoignages clients sous forme de grille (2 colonnes)
+    for i in range(0, len(TEMOIGNAGES), 2):
+        cols = st.columns(2)
+        for j in range(2):
+            if i + j < len(TEMOIGNAGES):
+                item = TEMOIGNAGES[i + j]
+                with cols[j]:
+                    st.markdown(f"""
+                    <div class="review-card">
+                        <div class="review-header">
+                            <div class="avatar-circle">{item['avatar']}</div>
+                            <div class="review-info">
+                                <h4>{item['nom']}</h4>
+                                <p>{item['role']}</p>
+                            </div>
+                        </div>
+                        <div class="review-stars">{item['stars']}</div>
+                        <div style="color: #94a3b8; font-style: italic; font-size: 14px;">"{item['texte']}"</div>
+                    </div>
+                    """, unsafe_allow_html=True)
+
+with tab3:
+    st.markdown("### ❓ Questions Fréquentes")
+    with st.expander("Comment se passe le déploiement des agents ?"):
+        st.write("Une fois l'acquisition validée sur WhatsApp, nous configurons l'agent selon vos besoins et vous recevez un lien d'accès direct ou un script d'intégration en moins de 24 heures.")
+    with st.expander("Les agents gratuits restent-ils gratuits à vie ?"):
+        st.write("Oui, tous les agents marqués comme gratuits restent accessibles sans frais pour les fonctionnalités de base.")
+    with st.expander("Puis-je demander un agent sur-mesure ?"):
+        st.write("Absolument. Contactez-nous directement via le bouton d'un agent Premium pour discuter d'un développement spécifique pour votre business.")
+
+# ─── FOOTER CONTACT GMAIL ───────────────────────────────────────────────────
+st.markdown("""
+    <div class="footer-container">
+        <p style="margin-bottom: 5px; color: #64748b; font-size: 13px;">Une question ou un besoin sur-mesure ?</p>
+        <a class="footer-email" href="mailto:amadouthiam579@gmail.com">📩 Contactez-nous : amadouthiam579@gmail.com</a>
+        <p style="margin-top: 15px; margin-bottom: 0; color: #334155; font-size: 11px;">© 2026 Forge IA. Tous droits réservés.</p>
+    </div>
+""", unsafe_allow_html=True)
