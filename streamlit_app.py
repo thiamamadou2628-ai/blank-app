@@ -4,7 +4,7 @@ import urllib.parse
 # ─── CONFIGURATION DE LA PAGE ────────────────────────────────────────────────
 st.set_page_config(page_title="Forge IA", page_icon="🤖", layout="wide")
 
-# ─── INJECTION DES STYLES CSS COMPLETS (VERSION FONDS IMAGES & ANIMATIONS) ───
+# ─── INJECTION DES STYLES CSS COMPLETS ───────────────────────────────────────
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght=400;700;900&family=Syne:wght=400;700;800&display=swap');
@@ -92,7 +92,6 @@ st.markdown("""
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
     }
     
-    /* FILTRE ASSOMBREUR POUR LA LISIBILITÉ DU TEXTE */
     .agent-card::before {
         content: "";
         position: absolute;
@@ -185,10 +184,10 @@ st.markdown("""
 
 # ─── CONFIGURATION DES VARIABLES GLOBALES ────────────────────────────────────
 WHATSAPP = "221771122598"
-PRIX = "10 $"
+PRIX = "5 $"  # Prix mis à jour à 5 dollars
 
 TEMOIGNAGES = [
-    {"nom": "Karim B.", "role": "CEO Startup", "texte": "L'Avocat IA m'a économisé 3000$ en frais juridiques dès le premier mois. Incroyable.", "avatar": "K", "stars": "★★★★★"},
+    {"nom": "Karim B.", "role": "CEO Startup", "texte": "L'Avocat IA m'a économisé d'importants frais juridiques dès le premier mois. Incroyable.", "avatar": "K", "stars": "★★★★★"},
     {"nom": "Sophie L.", "role": "E-commerçante", "texte": "Mon CA a bondi de +40% grâce à l'Expert Shopify. ROI immédiat sur l'investissement.", "avatar": "S", "stars": "★★★★★"},
     {"nom": "Marcus T.", "role": "Trader Crypto", "texte": "L'Analyste Web3 m'alerte avant les mouvements de marché. Un must-have absolu.", "avatar": "M", "stars": "★★★★★"},
     {"nom": "Aïda F.", "role": "DRH Tech", "texte": "Le Recruteur IA analyse 200 CVs en 30 secondes. Mon équipe RH adore.", "avatar": "A", "stars": "★★★★☆"}
@@ -252,7 +251,7 @@ with tab1:
                     with cols[j]:
                         skills_html = "".join([f'<span class="skill-tag">{s}</span>' for s in agent["skills"]])
                         if agent["type"] == "PREMIUM":
-                            msg = urllib.parse.quote(f"Bonjour, je veux l'agent Premium : {agent['t']}")
+                            msg = urllib.parse.quote(f"Bonjour, je veux l'agent Premium à {PRIX} : {agent['t']}")
                             btn_html = f'<a class="btn-wa" href="https://wa.me/{WHATSAPP}?text={msg}" target="_blank">🛒 ACHETER — {PRIX}</a>'
                         else:
                             btn_html = f'<a class="btn-free" href="#">🚀 ACCÈS GRATUIT</a>'
@@ -368,16 +367,45 @@ with tab4:
     with st.expander("Support technique ?"): st.write("Nous offrons un support 7j/7 pour vous aider à déployer vos agents.")
 
 with tab5:
-    st.info("🤖 Besoin d'un conseil ? Posez-moi votre question !")
-    if "msgs" not in st.session_state: st.session_state.msgs = [{"role": "assistant", "content": "Salut ! Quel type d'agent peut t'aider aujourd'hui ?"}]
-    for m in st.session_state.msgs:
-        with st.chat_message(m["role"]): st.write(m["content"])
-    if p := st.chat_input("Message..."):
-        st.session_state.msgs.append({"role": "user", "content": p})
-        with st.chat_message("user"): st.write(p)
-        r = "Super projet ! Contactez Amadou par mail ou WhatsApp pour une démo personnalisée. 🚀"
-        st.session_state.msgs.append({"role": "assistant", "content": r})
-        with st.chat_message("assistant"): st.write(r)
+    st.info("🤖 Discutez librement avec notre Conseiller Virtuel Forge IA !")
+    
+    # Initialisation de l'historique complet si vide
+    if "messages" not in st.session_state:
+        st.session_state.messages = [{"role": "assistant", "content": "Salut ! Je suis le robot conseiller de Forge IA. Je peux t'aiguiller sur nos agents Gratuits et nos exclusivités Premium à seulement 5 $. De quel type d'expertise as-je besoin pour ton projet aujourd'hui ?"}]
+    
+    # Affichage de tous les messages mémorisés
+    for msg in st.session_state.messages:
+        with st.chat_message(msg["role"]):
+            st.write(msg["content"])
+            
+    # Traitement interactif des entrées utilisateur
+    if user_input := st.chat_input("Posez votre question ici..."):
+        # Ajout du message utilisateur
+        st.session_state.messages.append({"role": "user", "content": user_input})
+        with st.chat_message("user"):
+            st.write(user_input)
+            
+        # Logique de réponse dynamique selon les mots-clés
+        ui_lower = user_input.lower()
+        if "jeu" in ui_lower or "gaming" in ui_lower or "galette" in ui_lower:
+            reply = "Le Développeur de Jeux 2D est parfait pour ça ! Il gère la modélisation et la logique comportementale des ennemis. Il est dispo en Premium pour seulement 5 $ !"
+        elif "foot" in ui_lower or "sport" in ui_lower or "classico" in ui_lower:
+            reply = "Notre Analyste Sportif IA extrait des métriques avancées sur les ligues majeurs et les grands chocs comme les Classicos. Idéal pour optimiser tes analyses pour 5 $."
+        elif "avatar" in ui_lower or "photo" in ui_lower or "cv" in ui_lower:
+            reply = "Besoin d'un profil pro impeccable ? L'agent Studio Avatar Pro génère des portraits photo-réalistes ultra-propres pour tes CVs et LinkedIn."
+        elif "shopify" in ui_lower or "gumroad" in ui_lower or "commerce" in ui_lower:
+            reply = "L'Expert Shopify configure des tunnels de vente haute conversion interconnectables avec GitHub et Gumroad pour maximiser tes revenus de produits digitaux !"
+        elif "gratuit" in ui_lower or "free" in ui_lower:
+            reply = "Nous disposons de plusieurs agents 100% Gratuits dans le Catalogue comme l'Architecte Python, le Débuggeur JS ou le Rédacteur Copywriter. Jette un œil !"
+        elif "prix" in ui_lower or "acheter" in ui_lower or "coûte" in ui_lower or "cout" in ui_lower:
+            reply = f"Bonne nouvelle ! Tous nos agents Premium de la Forge IA sont actuellement au tarif unique exceptionnel de {PRIX}. Un investissement rentabilisé immédiatement."
+        else:
+            reply = "C'est un excellent cas d'usage pour nos solutions ! Je te conseille de regarder notre onglet Catalogue pour choisir l'agent adapté, ou de contacter directement notre équipe via WhatsApp pour un déploiement sur-mesure."
+
+        # Enregistrement et affichage de la réponse
+        st.session_state.messages.append({"role": "assistant", "content": reply})
+        with st.chat_message("assistant"):
+            st.write(reply)
 
 # ─── FOOTER ──────────────────────────────────────────────────────────────────
 st.markdown("""
