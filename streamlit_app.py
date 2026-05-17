@@ -184,8 +184,9 @@ st.markdown("""
 
 # ─── CONFIGURATION DES VARIABLES GLOBALES ────────────────────────────────────
 WHATSAPP = "221771122598"
-PRIX = "5 $"  # Prix mis à jour à 5 dollars
+PRIX = "5 $"  # Tous les agents configurés à 5 dollars
 
+# LA VARIABLE RÉTABLIE ICI :
 TEMOIGNAGES = [
     {"nom": "Karim B.", "role": "CEO Startup", "texte": "L'Avocat IA m'a économisé d'importants frais juridiques dès le premier mois. Incroyable.", "avatar": "K", "stars": "★★★★★"},
     {"nom": "Sophie L.", "role": "E-commerçante", "texte": "Mon CA a bondi de +40% grâce à l'Expert Shopify. ROI immédiat sur l'investissement.", "avatar": "S", "stars": "★★★★★"},
@@ -193,7 +194,7 @@ TEMOIGNAGES = [
     {"nom": "Aïda F.", "role": "DRH Tech", "texte": "Le Recruteur IA analyse 200 CVs en 30 secondes. Mon équipe RH adore.", "avatar": "A", "stars": "★★★★☆"}
 ]
 
-# Liens d'images thématiques de fond pour le catalogue
+# Liens d'images thématiques de fond
 IMG_MARKETING = "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=500&q=60"
 IMG_DEV = "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=500&q=60"
 IMG_SPORT = "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=500&q=60"
@@ -214,7 +215,7 @@ CATALOGUE = [
     {"type": "FREE", "dom": "DÉVELOPPEMENT", "bg": IMG_DEV, "t": "Débuggeur JS", "badge": "gratuit", "badge_label": "✨ Offert", "rating": "4.7", "users": "640", "d": "Analyse et corrige vos bugs front-end en un temps record.", "skills": ["JavaScript", "Debug"]},
     {"type": "FREE", "dom": "MARKETING", "bg": IMG_DESIGN, "t": "Créatif Visuel", "badge": "gratuit", "badge_label": "🎨 Design", "rating": "4.8", "users": "1 100", "d": "Générateur de prompts ultra-précis pour Midjourney et Stable Diffusion.", "skills": ["Prompts", "Design"]},
     
-    # PREMIUM
+    # PREMIUM (Tous réglés à 5 $)
     {"type": "PREMIUM", "dom": "SPORT", "bg": IMG_SPORT, "t": "Analyste Sportif IA", "badge": "populaire", "badge_label": "⚽ Paris & Stats", "rating": "4.8", "users": "580", "d": "Analyse algorithmique des ligues de football et stratégies de paris.", "skills": ["Football", "Stats"]},
     {"type": "PREMIUM", "dom": "DESIGN", "bg": IMG_DESIGN, "t": "Studio Avatar Pro", "badge": "bestseller", "badge_label": "📸 Studio", "rating": "4.9", "users": "890", "d": "Portraits photo-réalistes IA pro pour CV et réseaux sociaux.", "skills": ["Portraits", "Pro"]},
     {"type": "PREMIUM", "dom": "DÉVELOPPEMENT", "bg": IMG_DEV, "t": "Développeur Jeux 2D", "badge": "tendance", "badge_label": "🎮 Gaming", "rating": "4.9", "users": "210", "d": "Scripts de mouvement et modélisation 2D complète (Sir Galette).", "skills": ["Gaming", "Unity"]},
@@ -274,7 +275,6 @@ with tab1:
 
 with tab2:
     st.markdown("### 🖼️ GALERIE DE PROJETS HAUTE PERFORMANCE")
-    st.write("Survolez les projets ci-dessous pour découvrir la puissance de nos agents en action.")
     
     p_cols1 = st.columns(2)
     with p_cols1[0]:
@@ -283,7 +283,7 @@ with tab2:
             <img class="portfolio-img" src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=600">
             <div class="portfolio-content">
                 <h4>🎮 Logique & Ennemis de Jeu 2D (Sir Galette)</h4>
-                <p>Développement complet de la structure d'un jeu de tir 2D d'arcade. Modélisation comportementale des ennemis (patrouille, attaques de zone) et nettoyage intégral du code principal pour assurer un gameplay fluide à 60 FPS.</p>
+                <p>Développement complet de la structure d'un jeu de tir 2D d'arcade. Modélisation comportementale des ennemis (patrouille, attaques de zone) et nettoyage de code.</p>
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -292,25 +292,7 @@ with tab2:
             <img class="portfolio-img" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600">
             <div class="portfolio-content">
                 <h4>📸 Studio Photo IA & Avatars Professionnels</h4>
-                <p>Génération de portraits d'affaires hyper-réalistes à partir de selfies ordinaires pour des profils LinkedIn et des CV. Ajustement chirurgical de la symétrie des yeux, de l'expression du visage et intégration d'habits pros sur-mesure.</p>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-        st.markdown("""
-        <div class="portfolio-card">
-            <img class="portfolio-img" src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600">
-            <div class="portfolio-content">
-                <h4>⚽ Analyse Prédictive : Les Grands Classicos</h4>
-                <p>Algorithme d'analyse croisant les historiques de matchs, l'état de forme des joueurs clés et la dynamique de grands chocs (comme les derbys et les Classicos). Génération de statistiques pré-match d'une précision chirurgicale.</p>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-        st.markdown("""
-        <div class="portfolio-card">
-            <img class="portfolio-img" src="https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=600">
-            <div class="portfolio-content">
-                <h4>🔐 Audit de Contrats Web3 Securisés</h4>
-                <p>Analyse de lignes de code de smart contracts sur Ethereum et Solana. Repérage immédiat des failles de sécurité critiques et optimisation des coûts de gaz avant le déploiement sur les réseaux de test.</p>
+                <p>Génération de portraits d'affaires hyper-réalistes à partir de selfies pour profils LinkedIn et CVs.</p>
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -318,37 +300,10 @@ with tab2:
     with p_cols1[1]:
         st.markdown("""
         <div class="portfolio-card">
-            <img class="portfolio-img" src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600">
+            <img class="portfolio-img" src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600">
             <div class="portfolio-content">
-                <h4>💰 Tunnel de Vente E-Commerce Intégré</h4>
-                <p>Déploiement d'une structure automatisée pour boutiques en ligne. Intégration de plateformes de produits digitaux comme Gumroad et gestion de l'hébergement sécurisé sur GitHub Pages, doublant le taux de conversion.</p>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-        st.markdown("""
-        <div class="portfolio-card">
-            <img class="portfolio-img" src="https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?w=600">
-            <div class="portfolio-content">
-                <h4>🐍 Script d'Automatisation Python & API</h4>
-                <p>Création d'un outil complet d'extraction et de traitement de données connecté à des applications de messagerie. Extraction automatique de fichiers volumineux, tri intelligent et stockage structuré sans aucune action humaine.</p>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-        st.markdown("""
-        <div class="portfolio-card">
-            <img class="portfolio-img" src="https://images.unsplash.com/photo-1507537297725-24a1c029d3ca?w=600">
-            <div class="portfolio-content">
-                <h4>👔 Automatisation des Procédés RH</h4>
-                <p>Interface IA capable de trier, catégoriser et évaluer la pertinence de profils complexes de candidats (par exemple pour des postes d'encadrement en service client). Réduction du temps de sélection initial de 75%.</p>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-        st.markdown("""
-        <div class="portfolio-card">
-            <img class="portfolio-img" src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600">
-            <div class="portfolio-content">
-                <h4>✍️ Générateur de Contenu & Copywriting Viral</h4>
-                <p>Conception automatique de textes publicitaires persuasifs et de plans éditoriaux pour les réseaux sociaux. Adapté instantanément au ton de l'entreprise pour maximiser l'engagement et le clic.</p>
+                <h4>⚽ Analyse Prédictive : Les Grands Classicos</h4>
+                <p>Algorithme d'analyse croisant les historiques de matchs et l'état de forme des joueurs clés pour les grands derbys.</p>
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -368,47 +323,37 @@ with tab4:
 
 with tab5:
     st.info("🤖 Discutez librement avec notre Conseiller Virtuel Forge IA !")
-    
-    # Initialisation de l'historique complet si vide
     if "messages" not in st.session_state:
-        st.session_state.messages = [{"role": "assistant", "content": "Salut ! Je suis le robot conseiller de Forge IA. Je peux t'aiguiller sur nos agents Gratuits et nos exclusivités Premium à seulement 5 $. De quel type d'expertise as-je besoin pour ton projet aujourd'hui ?"}]
+        st.session_state.messages = [{"role": "assistant", "content": f"Salut ! Je suis le robot conseiller de Forge IA. Je peux t'aiguiller sur nos agents Gratuits et nos exclusivités Premium à seulement {PRIX}. De quel type d'expertise as-tu besoin aujourd'hui ?"}]
     
-    # Affichage de tous les messages mémorisés
     for msg in st.session_state.messages:
-        with st.chat_message(msg["role"]):
-            st.write(msg["content"])
+        with st.chat_message(msg["role"]): st.write(msg["content"])
             
-    # Traitement interactif des entrées utilisateur
     if user_input := st.chat_input("Posez votre question ici..."):
-        # Ajout du message utilisateur
         st.session_state.messages.append({"role": "user", "content": user_input})
-        with st.chat_message("user"):
-            st.write(user_input)
+        with st.chat_message("user"): st.write(user_input)
             
-        # Logique de réponse dynamique selon les mots-clés
         ui_lower = user_input.lower()
         if "jeu" in ui_lower or "gaming" in ui_lower or "galette" in ui_lower:
-            reply = "Le Développeur de Jeux 2D est parfait pour ça ! Il gère la modélisation et la logique comportementale des ennemis. Il est dispo en Premium pour seulement 5 $ !"
+            reply = "Le Développeur de Jeux 2D est parfait pour ça ! Il gère la logique comportementale des ennemis pour seulement 5 $ !"
         elif "foot" in ui_lower or "sport" in ui_lower or "classico" in ui_lower:
-            reply = "Notre Analyste Sportif IA extrait des métriques avancées sur les ligues majeurs et les grands chocs comme les Classicos. Idéal pour optimiser tes analyses pour 5 $."
+            reply = "Notre Analyste Sportif IA extrait des métriques avancées sur les grands chocs comme les Classicos pour 5 $."
         elif "avatar" in ui_lower or "photo" in ui_lower or "cv" in ui_lower:
-            reply = "Besoin d'un profil pro impeccable ? L'agent Studio Avatar Pro génère des portraits photo-réalistes ultra-propres pour tes CVs et LinkedIn."
-        elif "shopify" in ui_lower or "gumroad" in ui_lower or "commerce" in ui_lower:
-            reply = "L'Expert Shopify configure des tunnels de vente haute conversion interconnectables avec GitHub et Gumroad pour maximiser tes revenus de produits digitaux !"
+            reply = "L'agent Studio Avatar Pro génère des portraits photo-réalistes professionnels pour tes CVs et LinkedIn."
+        elif "shopify" in ui_lower or "commerce" in ui_lower:
+            reply = "L'Expert Shopify configure des tunnels de vente haute conversion interconnectables avec Gumroad."
         elif "gratuit" in ui_lower or "free" in ui_lower:
-            reply = "Nous disposons de plusieurs agents 100% Gratuits dans le Catalogue comme l'Architecte Python, le Débuggeur JS ou le Rédacteur Copywriter. Jette un œil !"
-        elif "prix" in ui_lower or "acheter" in ui_lower or "coûte" in ui_lower or "cout" in ui_lower:
-            reply = f"Bonne nouvelle ! Tous nos agents Premium de la Forge IA sont actuellement au tarif unique exceptionnel de {PRIX}. Un investissement rentabilisé immédiatement."
+            reply = "Nous disposons de plusieurs agents 100% Gratuits (Architecte Python, Débuggeur JS, Copywriter)."
+        elif "prix" in ui_lower or "acheter" in ui_lower or "coûte" in ui_lower:
+            reply = f"Tous nos agents Premium de la Forge IA sont actuellement au tarif unique de {PRIX} !"
         else:
-            reply = "C'est un excellent cas d'usage pour nos solutions ! Je te conseille de regarder notre onglet Catalogue pour choisir l'agent adapté, ou de contacter directement notre équipe via WhatsApp pour un déploiement sur-mesure."
+            reply = "C'est un excellent cas d'usage ! Je te conseille de regarder notre onglet Catalogue pour choisir l'agent adapté."
 
-        # Enregistrement et affichage de la réponse
         st.session_state.messages.append({"role": "assistant", "content": reply})
-        with st.chat_message("assistant"):
-            st.write(reply)
+        with st.chat_message("assistant"): st.write(reply)
 
 # ─── FOOTER ──────────────────────────────────────────────────────────────────
-st.markdown("""
+st.markdown(f"""
     <div class="footer-container">
         <a class="footer-email" href="mailto:amadouthiam579@gmail.com">📩 amadouthiam579@gmail.com</a>
         <p style="color: #334155; font-size: 11px; margin-top: 25px;">© 2026 FORGE IA — L'EXCELLENCE ARTIFICIELLE</p>
